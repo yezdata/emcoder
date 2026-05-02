@@ -59,91 +59,52 @@ uncertainty = probs_all.std(dim=0) # Epistemic Uncertainty (Standard Deviation)
 ## Model Architecture
 ```mermaid
 flowchart LR
+    subgraph InputGroup["Input Operations"]
+        direction TB
+        MCD_Loop(["MC-Inference 
+        N_samples"]):::LoopNode
+        ids["Batch IDs"]
+        mask["Batch Mask"]
+    end
 
-subgraph InputGroup["Input Operations"]
-    direction TB
-    MCD_Loop(["MC-Inference Loop: N_samples"]):::LoopNode
-    ids["Batch IDs"]
-    mask["Batch Mask"]
-end
+    subgraph EmCoderCore["EmCoder Core"]
+        direction LR
+        tok_emb["Token Embedding"]
+        ln_in["Input LayerNorm"]
+        Transformer["Transformer Encoder"]
+        final_norm["Final LayerNorm"]
+        Dropout1[("MC-Dropout")]:::MCD
+        Dropout2[("MC-Dropout")]:::MCD
+    end
 
-subgraph EmCoderCore["EmCoder Core"]
-    direction LR
-    tok_emb["Token Embedding"]
-    ln_in["Input LayerNorm"]
-    Transformer["Transformer Encoder"]
-    final_norm["Final LayerNorm"]
-    Dropout1[("MC-Dropout")]
-    Dropout2[("MC-Dropout")]
-end
+    subgraph ClassifierHead["Classifier Head"]
+        direction TB
+        pool["Masked Mean Pooling"]
+        MLP["Classifier MLP"]
+    end
 
-subgraph Row1[" "]
-    direction LR
-    InputGroup
-    EmCoderCore
-end
+    MCD_Loop -.-> ids
+    ids ==> tok_emb
+    tok_emb ==> ln_in
+    ln_in -.-> Dropout1
+    Dropout1 ==> Transformer
+    mask ==> Transformer
+    Transformer -.-> Dropout2
+    Dropout2 ==> final_norm
+    final_norm ==> pool
+    mask ==> pool
+    pool ==> MLP
+    MLP ==> Out(["Class LogitsMC
+    (N_samples, B, 28)"]):::OutNode
+    Out ==> Avg(["Bayesian Post-processing"]):::BayesNode
 
-subgraph MLP["Classifier MLP"]
-    L_lin["Linear 1"]
-    Dropout3[("MC-Dropout")]
-    GELU["GELU"]
-    F_lin["Final Linear"]
-end
-
-subgraph ClassifierHead[" "]
-    direction TB
-    pool["Masked Mean Pooling"]
-    MLP
-end
-
-subgraph Row2[" "]
-    direction LR
-    ClassifierHead
-    Out(["Class LogitsMC
-    (n_samples, B, 28)"])
-
-    Avg["Bayesian Post-processing"]
-end
-
-tok_emb ==> ln_in
-ln_in -.-> Dropout1
-Dropout1 ==> Transformer
-Transformer -.-> Dropout2
-Dropout2 ==> final_norm
-MCD_Loop -.-> ids
-ids ==> tok_emb
-final_norm ==> pool
-mask ==> pool
-pool ==> L_lin
-L_lin -.-> Dropout3
-Dropout3 ==> GELU
-GELU ==> F_lin
-F_lin ==> Out
-Out ==> Avg
-mask ==> Transformer
-
-classDef MCD fill:#424242,stroke:#fbc02d,stroke-width:2px,stroke-dasharray: 5 5,color:#fff
-classDef OutNode fill:#0d47a1,stroke:#1976d2,stroke-width:3px,color:#fff,font-weight:bold
-classDef BayesNode fill:#3e2723,stroke:#8d6e63,stroke-width:2px,stroke-dasharray: 3 3,color:#fff
-classDef LoopNode fill:#263238,stroke:#78909c,stroke-width:2px,color:#fff,font-style:italic
-classDef LightNode fill:#212121,stroke:#90a4ae,color:#fff
-
-class MCD_Loop LoopNode
-class ids,mask,tok_emb,ln_in,Transformer,final_norm,L_lin,GELU,F_lin,pool LightNode
-class Dropout1,Dropout2,Dropout3 MCD
-class Out OutNode
-class Avg BayesNode
-
-style InputGroup fill:#1a1a1a,stroke:#444,color:#fff
-style EmCoderCore fill:#2d1a2d,stroke:#6a1b9a,color:#fff
-style MLP fill:#212121,stroke:#455a64,color:#fff
-style ClassifierHead fill:#012a4a,stroke:#01497c,color:#fff
-style Row1 fill:none,stroke:none
-style Row2 fill:none,stroke:none
-
-linkStyle 2 stroke:#fbc02d,stroke-width:2px,fill:none
-linkStyle 5 stroke:#fbc02d,stroke-width:2px,fill:none
-linkStyle 11 stroke:#fbc02d,stroke-width:2px,fill:none
+    classDef MCD fill:#424242,stroke:#fbc02d,stroke-width:2px,stroke-dasharray: 5 5,color:#fff
+    classDef OutNode fill:#0d47a1,stroke:#1976d2,stroke-width:3px,color:#fff,font-weight:bold
+    classDef BayesNode fill:#3e2723,stroke:#ff7043,stroke-width:2px,color:#fff
+    classDef LoopNode fill:#263238,stroke:#78909c,stroke-width:2px,color:#fff,font-style:italic
+    
+    linkStyle 1,2,4,7,8,9,10,11 stroke:#eceff1,stroke-width:2px
+    linkStyle 3,5,6 stroke:#fbc02d,stroke-width:2px
 ```
 
 
