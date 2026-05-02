@@ -1,5 +1,5 @@
 # EmCoder
-> **Probabilistic Emotion Recognition & Uncertainty Quantification**<br>**28 Emotion multi-label classifier trained with MC Dropout methodology**  
+> **Probabilistic Emotion Recognition & Uncertainty Quantification**<br>**28 Emotion multi-label classifier trained with MC Dropout methodology**<br>**https://huggingface.co/yezdata/EmCoder**
 
 
 
@@ -166,6 +166,11 @@ $$
 **Using threshold of 0.5 for binarizing predictions**
 |                |   precision |   recall |   f1-score |   support |
 |:---------------|------------:|---------:|-----------:|----------:|
+| micro avg      |       0.494 |    0.596 |      0.54  |      6329 |
+| macro avg      |       0.408 |    0.495 |      0.44  |      6329 |
+| weighted avg   |       0.492 |    0.596 |      0.535 |      6329 |
+| samples avg    |       0.525 |    0.616 |      0.544 |      6329 |
+|----------------|-------------|----------|------------|-----------|
 | admiration     |       0.541 |    0.673 |      0.599 |       504 |
 | amusement      |       0.688 |    0.909 |      0.783 |       264 |
 | anger          |       0.419 |    0.47  |      0.443 |       198 |
@@ -194,10 +199,6 @@ $$
 | sadness        |       0.405 |    0.545 |      0.464 |       156 |
 | surprise       |       0.429 |    0.539 |      0.478 |       141 |
 | neutral        |       0.602 |    0.695 |      0.645 |      1787 |
-| micro avg      |       0.494 |    0.596 |      0.54  |      6329 |
-| macro avg      |       0.408 |    0.495 |      0.44  |      6329 |
-| weighted avg   |       0.492 |    0.596 |      0.535 |      6329 |
-| samples avg    |       0.525 |    0.616 |      0.544 |      6329 |
 
 
 
