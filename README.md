@@ -20,22 +20,27 @@ EmCoder achieves competitive F1-scores while being ~35% smaller than RoBERTa-bas
 
 
 ## How to use
-> Since `.safetensors` files only store model weights and not the class logic, you need to use the provided `emcoder.py` to enable **MC Dropout inference**.<br>EmCoder v1.0 requires the `roberta-base` tokenizer for correct token-to-embedding mapping.
+> EmCoder v1.0 uses the `roberta-base` tokenizer for correct token-to-embedding mapping.
 ### 1. Setup & Tokenization
+Install dependencies
+```bash
+pip install -r requirements.txt
+```
+Setup EmCoder
 ```python
-from transformers import AutoTokenizer
-from emcoder import EmCoder # Ensure emcoder.py is in your directory
+import torch
+from transformers import AutoModel, AutoTokenizer
+
+repo_id = "yezdata/EmCoder"
 
 # Load the same tokenizer used during training
-tokenizer = AutoTokenizer.from_pretrained("roberta-base")
-
-EMCODER_PATH = "path/to/emcoder"
+tokenizer = AutoTokenizer.from_pretrained(repo_id)
 
 # Initialize with same config as training
-model = EmCoder.from_pretrained(EMCODER_PATH)
+model = AutoModel.from_pretrained(repo_id, trust_remote_code=True)
 ```
 ### 2. Bayesian inference
-To obtain probabilistic outputs and uncertainty metrics, use the mc_forward method:
+To obtain probabilistic outputs and uncertainty metrics, use the `mc_forward` method:
 ```python
 import torch
 
@@ -44,16 +49,32 @@ N_SAMPLES = 50
 model.eval()
 
 inputs = tokenizer("I am so happy you are here!", return_tensors="pt")
-logits_mc = model.mc_forward(inputs['input_ids'], inputs['attention_mask'], n_samples=N_SAMPLES) # Automatically keeps Dropout active, even when in model.eval
+with torch.no_grad():
+    logits_mc = model.mc_forward(inputs['input_ids'], inputs['attention_mask'], n_samples=N_SAMPLES) # Automatically keeps Dropout active, even when in model.eval
 
 # Bayesian Post-processing
-# logits_mc shape: (n_samples, batch_size, 28)
-probs_all = torch.sigmoid(logits_mc)
+probs_all = torch.sigmoid(logits_mc) # (n_samples, B, 28)
 
 mean_probs = probs_all.mean(dim=0) # Mean Predicted Probability
 uncertainty = probs_all.std(dim=0) # Epistemic Uncertainty (Standard Deviation)
-```
 
+
+# Formatted Output
+m_probs = mean_probs.squeeze(0)
+u_vals = uncertainty.squeeze(0)
+
+print(f"{'Emotion':<15} | {'Prob':<10} | {'Uncertainty':<10}")
+print("-" * 40)
+
+sorted_indices = torch.argsort(m_probs, descending=True)
+
+for idx in sorted_indices:
+    prob, unc = m_probs[idx].item(), u_vals[idx].item()
+    label = model.config.id2label[idx.item()]
+    
+    if prob > 0.05: # Print only emotions with prob > 5% (optional for clarity)
+        print(f"{label:<15} | {prob:>8.2%} | ±{unc:>8.4f}")
+```
 
 
 ## Model Architecture
