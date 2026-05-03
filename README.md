@@ -22,11 +22,6 @@ EmCoder achieves competitive F1-scores while being ~35% smaller than RoBERTa-bas
 ## How to use
 > EmCoder v1.0 uses the `roberta-base` tokenizer for correct token-to-embedding mapping.
 ### 1. Setup & Tokenization
-Install dependencies
-```bash
-pip install torch transformers safetensors
-```
-Setup EmCoder
 ```python
 import torch
 from transformers import AutoModel, AutoTokenizer
