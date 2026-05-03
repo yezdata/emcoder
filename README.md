@@ -1,5 +1,5 @@
 # EmCoder
-> **Probabilistic Emotion Recognition & Uncertainty Quantification**<br>**28 Emotion multi-label classifier trained with MC Dropout methodology**<br>**https://huggingface.co/yezdata/EmCoder**
+> **Probabilistic Emotion Recognition & Uncertainty Quantification**<br>**28 Emotion multi-label Transformer-based classifier trained with MC Dropout methodology**<br>**https://huggingface.co/yezdata/EmCoder**
 
 
 
