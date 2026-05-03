@@ -24,7 +24,7 @@ EmCoder achieves competitive F1-scores while being ~35% smaller than RoBERTa-bas
 ### 1. Setup & Tokenization
 Install dependencies
 ```bash
-pip install -r requirements.txt
+pip install torch transformers safetensors
 ```
 Setup EmCoder
 ```python
