@@ -42,8 +42,6 @@ model = AutoModel.from_pretrained(repo_id, trust_remote_code=True)
 ### 2. Bayesian inference
 To obtain probabilistic outputs and uncertainty metrics, use the `mc_forward` method:
 ```python
-import torch
-
 # Perform 50 stochastic passes
 N_SAMPLES = 50
 model.eval()
