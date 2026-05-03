@@ -44,9 +44,10 @@ To obtain probabilistic outputs and uncertainty metrics, use the `mc_forward` me
 ```python
 # Perform 50 stochastic passes
 N_SAMPLES = 50
-model.eval()
 
 inputs = tokenizer("I am so happy you are here!", return_tensors="pt")
+
+model.eval()
 with torch.no_grad():
     logits_mc = model.mc_forward(inputs['input_ids'], inputs['attention_mask'], n_samples=N_SAMPLES) # Automatically keeps Dropout active, even when in model.eval
 
@@ -70,7 +71,7 @@ for idx in sorted_indices:
     prob, unc = m_probs[idx].item(), u_vals[idx].item()
     label = model.config.id2label[idx.item()]
     
-    if prob > 0.05: # Print only emotions with prob > 5% (optional for clarity)
+    if prob > 0.05: # Print only emotions with prob > 5%
         print(f"{label:<15} | {prob:>8.2%} | ±{unc:>8.4f}")
 ```
 
