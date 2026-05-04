@@ -174,12 +174,15 @@ $$
 | remorse        |       0.516 |    0.857 |      0.644 |        56 |
 | sadness        |       0.405 |    0.545 |      0.464 |       156 |
 | surprise       |       0.429 |    0.539 |      0.478 |       141 |
-| neutral        |       0.602 |    0.695 |      0.645 |      1787 |
+| neutral        |       0.602 |    0.695 |      0.645 |      1787 |  
 
 
 
-**Model uncertainty estimation**
+
+<br>**Model uncertainty quantification on GoEmotions test set**  
+The distribution demonstrates strong calibration, as the highest error density correlates with increased epistemic uncertainty. While most high-probability predictions are correct, a small fragment of overconfident incorrects remains likely due to dataset bias or linguistic nuances like sarcasm. These outliers identify a clear opportunity for further refinement using **temperature scaling**.
 ![epistemic_unc](outputs/epistemic_unc_scatter.png)
+
 
 **Confusion matrix**
 ![multi_label_confusion_matrix](outputs/confusion_matrix.png)
