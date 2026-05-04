@@ -13,14 +13,14 @@ EmCoder is optimized for **MC Dropout inference**.
 EmCoder achieves competitive F1-scores while being ~35% smaller than RoBERTa-base and ~45% smaller than ModernBERT, offering a superior efficiency-to-uncertainty ratio.
 | Model | Precision | Recall | F1-Score | Params |
 | :--- | :--- | :--- | :--- | :--- |
-| **EmCoder (v1)** | **0.408** | **0.495** | **0.440** | **82.1M** |
+| **EmCoder** | **0.408** | **0.495** | **0.440** | **82.1M** |
 | Google BERT (Original) | 0.400 | 0.630 | 0.460 | 110M |
 | RoBERTa-base | 0.575 | 0.396 | 0.450 | 125M |
 | ModernBERT-base | 0.652 | 0.443 | 0.500 | 149M |
 
 
 ## How to use
-> EmCoder v1.0 uses the `roberta-base` tokenizer for correct token-to-embedding mapping.
+> EmCoder uses the `roberta-base` tokenizer for correct token-to-embedding mapping.
 ### 1. Setup & Tokenization
 ```python
 import torch
