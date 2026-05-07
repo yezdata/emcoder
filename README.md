@@ -43,14 +43,14 @@ N_SAMPLES = 50
 inputs = tokenizer("I am so happy you are here!", return_tensors="pt")
 
 model.eval()
-with torch.no_grad():
-    logits_mc = model.mc_forward(inputs['input_ids'], inputs['attention_mask'], n_samples=N_SAMPLES) # Automatically keeps Dropout active, even when in model.eval
+with torch.inference_mode():
+    mc_logits = model.mc_forward(inputs['input_ids'], inputs['attention_mask'], n_samples=N_SAMPLES) # Automatically keeps Dropout active, even when in model.eval
 
 # Bayesian Post-processing
-probs_all = torch.sigmoid(logits_mc) # (n_samples, B, 28)
+all_probs = torch.sigmoid(mc_logits) # (n_samples, B, 28)
 
-mean_probs = probs_all.mean(dim=0) # Mean Predicted Probability
-uncertainty = probs_all.std(dim=0) # Epistemic Uncertainty (Standard Deviation)
+mean_probs = all_probs.mean(dim=0) # Mean Predicted Probability
+uncertainty = all_probs.std(dim=0) # Epistemic Uncertainty
 
 
 # Formatted Output
