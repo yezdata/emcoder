@@ -139,9 +139,14 @@ $$
 
 
 ## Performance
-**Using `thresholds.json` optimization for binarizing and filtering (uncertainty) predictions**
+**Using `thresholds.json` optimization on val set for binarizing and filtering (uncertainty) predictions**
 |                |   precision |   recall |   f1-score |   support |
 |:---------------|------------:|---------:|-----------:|----------:|
+| micro avg      |       0.476 |    0.611 |      0.535 |      6329 |
+| macro avg      |       0.464 |    0.478 |      0.447 |      6329 |
+| weighted avg   |       0.511 |    0.611 |      0.542 |      6329 |
+| samples avg    |       0.524 |    0.637 |      0.55  |      6329 |  
+|----------------|-------------|----------|------------|-----------|
 | admiration     |       0.635 |    0.565 |      0.598 |       504 |
 | amusement      |       0.713 |    0.894 |      0.793 |       264 |
 | anger          |       0.367 |    0.525 |      0.432 |       198 |
@@ -170,10 +175,6 @@ $$
 | sadness        |       0.624 |    0.372 |      0.466 |       156 |
 | surprise       |       0.534 |    0.447 |      0.486 |       141 |
 | neutral        |       0.567 |    0.804 |      0.665 |      1787 |
-| micro avg      |       0.476 |    0.611 |      0.535 |      6329 |
-| macro avg      |       0.464 |    0.478 |      0.447 |      6329 |
-| weighted avg   |       0.511 |    0.611 |      0.542 |      6329 |
-| samples avg    |       0.524 |    0.637 |      0.55  |      6329 |  
 
 
 **Using threshold of 0.5 for binarizing predictions**
