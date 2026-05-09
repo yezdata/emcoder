@@ -138,8 +138,8 @@ $$
 
 
 
-## Performance
-**Using `thresholds.json` optimization on val set (both probability and uncertainty thresholds) for binarizing predictions**
+## Performance on test set
+**Using `thresholds.json` optimization from val set (both probability and uncertainty thresholds) for binarizing predictions**
 |                |   precision |   recall |   f1-score |   support |
 |:---------------|------------:|---------:|-----------:|----------:|
 | micro avg      |       0.476 |    0.611 |      0.535 |      6329 |
