@@ -139,7 +139,7 @@ $$
 
 
 ## Performance
-**Using `thresholds.json` optimization on val set for binarizing and filtering (uncertainty) predictions**
+**Using `thresholds.json` optimization on val set (both probability and uncertainty thresholds) for binarizing predictions**
 |                |   precision |   recall |   f1-score |   support |
 |:---------------|------------:|---------:|-----------:|----------:|
 | micro avg      |       0.476 |    0.611 |      0.535 |      6329 |
@@ -177,7 +177,7 @@ $$
 | neutral        |       0.567 |    0.804 |      0.665 |      1787 |
 
 
-**Using threshold of 0.5 for binarizing predictions**
+**Using default threshold of 0.5 for binarizing predictions**
 |                |   precision |   recall |   f1-score |   support |
 |:---------------|------------:|---------:|-----------:|----------:|
 | micro avg      |       0.494 |    0.596 |      0.54  |      6329 |
