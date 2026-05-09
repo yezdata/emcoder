@@ -10,7 +10,7 @@ EmCoder is optimized for **MC Dropout inference**.
 
 ## SOTA benchmark
 ### Evaluation on the GoEmotions test split (macro avg metrics)
-EmCoder achieves competitive F1-scores while being ~35% smaller than RoBERTa-base and ~45% smaller than ModernBERT, offering a superior efficiency-to-uncertainty ratio.
+EmCoder achieves competitive F1-score with its compact size (~35% smaller than RoBERTa-base and ~45% smaller than ModernBERT), while providing per-class epistemic uncertainty quantification.
 | Model | Precision | Recall | F1-Score | Params |
 | :--- | :--- | :--- | :--- | :--- |
 | **EmCoder** | **0.464** | **0.478** | **0.447** | **82.1M** |
