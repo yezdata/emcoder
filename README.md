@@ -20,8 +20,8 @@ EmCoder achieves competitive F1-score with its compact size (~35% smaller than R
 
 
 ## How to use
-> EmCoder uses the `roberta-base` tokenizer for correct token-to-embedding mapping.
 ### 1. Setup & Tokenization
+> EmCoder uses the `roberta-base` tokenizer for correct token-to-embedding mapping.
 ```python
 import torch
 from transformers import AutoModel, AutoTokenizer
