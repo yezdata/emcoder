@@ -45,7 +45,13 @@ inputs = tokenizer("I am so happy you are here!", return_tensors="pt")
 
 model.eval()
 with torch.no_grad():
-    mc_logits = model.mc_forward(inputs['input_ids'], inputs['attention_mask'], n_samples=N_SAMPLES, max_batch_size=MAX_BATCH_SIZE) # Automatically keeps Dropout active, even when in model.eval
+    # Automatically keeps Dropout active, even when in model.eval
+    mc_logits = model.mc_forward(
+        inputs['input_ids'],
+        inputs['attention_mask'],
+        n_samples=N_SAMPLES,
+        max_batch_size=MAX_BATCH_SIZE
+    )
 
 # Bayesian Post-processing
 all_probs = torch.sigmoid(mc_logits) # (n_samples, B, 28)
