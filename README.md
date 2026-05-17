@@ -29,7 +29,7 @@ from transformers import AutoModel, AutoTokenizer
 repo_id = "yezdata/EmCoder"
 
 # Load the same tokenizer used during training
-tokenizer = AutoTokenizer.from_pretrained(repo_id)
+tokenizer = AutoTokenizer.from_pretrained(repo_id, trust_remote_code=True)
 
 # Initialize with same config as training
 model = AutoModel.from_pretrained(repo_id, trust_remote_code=True)
