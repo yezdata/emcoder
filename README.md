@@ -183,6 +183,7 @@ $$
 ### Entropy-based uncertainty quantification
 
 <br>**Model uncertainty quantification on GoEmotions test set**  
+Flattened emotion predictions
 | Mean probability vs Epistemic | Mean probability vs Aleatoric |
 | :---: | :---: |
 | ![Epistemic Scatter](outputs/epistemic_unc_scatter.png) | ![Aleatoric Scatter](outputs/aleatoric_unc_scatter.png) |
