@@ -1,5 +1,5 @@
 # EmCoder
-> **Probabilistic Emotion Recognition & Uncertainty Quantification**<br>**28 Emotion multi-label Transformer-based classifier trained with MC Dropout methodology**<br>**https://huggingface.co/yezdata/EmCoder**
+> **Probabilistic Emotion Recognition & Uncertainty Quantification**<br>**28 Emotion multi-label Transformer classifier**<br>**https://huggingface.co/yezdata/EmCoder**
 
 
 
@@ -13,7 +13,7 @@ EmCoder is optimized for **MC Dropout inference**.
 EmCoder achieves competitive F1-score with its compact size (~35% smaller than RoBERTa-base and ~45% smaller than ModernBERT), while providing per-class epistemic uncertainty quantification.
 | Model | Precision | Recall | F1-Score | Params |
 | :--- | :--- | :--- | :--- | :--- |
-| **EmCoder** | **0.464** | **0.478** | **0.447** | **82.1M** |
+| **EmCoder** | **0.469** | **0.486** | **0.463** | **82.1M** |
 | Google BERT (Original) | 0.400 | 0.630 | 0.460 | 110M |
 | RoBERTa-base | 0.575 | 0.396 | 0.450 | 125M |
 | ModernBERT-base | 0.583 | 0.535 | 0.550 | 149M |
@@ -39,12 +39,13 @@ To obtain probabilistic outputs and uncertainty metrics, use the `mc_forward` me
 ```python
 # Perform 50 stochastic passes
 N_SAMPLES = 50
+MAX_BATCH_SIZE = 10 # optional sub-batching of N_SAMPLES
 
 inputs = tokenizer("I am so happy you are here!", return_tensors="pt")
 
 model.eval()
-with torch.inference_mode():
-    mc_logits = model.mc_forward(inputs['input_ids'], inputs['attention_mask'], n_samples=N_SAMPLES) # Automatically keeps Dropout active, even when in model.eval
+with torch.no_grad():
+    mc_logits = model.mc_forward(inputs['input_ids'], inputs['attention_mask'], n_samples=N_SAMPLES, max_batch_size=MAX_BATCH_SIZE) # Automatically keeps Dropout active, even when in model.eval
 
 # Bayesian Post-processing
 all_probs = torch.sigmoid(mc_logits) # (n_samples, B, 28)
@@ -124,12 +125,7 @@ flowchart LR
 
 
 ### Optimization
-The model is trained using a Weighted Bayesian Binary Cross Entropy loss:
-
-$$
-\mathcal{L}_{Bayesian} = \frac{1}{T} \sum_{t=1}^{T} \text{BCEWithLogits}(z^{(t)}, y; w)
-$$
-
+The model is trained using a **Weighted Binary Cross Entropy loss**  
 Where weights $w$ are calculated using a logarithmic class-balancing scale to handle extreme label imbalance:
 
 $$
@@ -138,93 +134,63 @@ $$
 
 
 
+
 ## Performance on test set
-**Using `thresholds.json` optimization from val set (both probability and uncertainty thresholds) for binarizing predictions**
+**Using `thresholds.json` optimization of probabilty thresholds for binarizing predictions (from val set)**
 |                |   precision |   recall |   f1-score |   support |
 |:---------------|------------:|---------:|-----------:|----------:|
-| micro avg      |       0.476 |    0.611 |      0.535 |      6329 |
-| macro avg      |       0.464 |    0.478 |      0.447 |      6329 |
-| weighted avg   |       0.511 |    0.611 |      0.542 |      6329 |
-| samples avg    |       0.524 |    0.637 |      0.55  |      6329 |  
+| micro avg      |       0.482 |    0.627 |      0.545 |      6329 |
+| **macro avg**  |   **0.469** |**0.486** |  **0.463** |      6329 |
+| weighted avg   |       0.508 |    0.627 |      0.550 |      6329 |
+| samples avg    |       0.532 |    0.651 |      0.560 |      6329 |
 |----------------|-------------|----------|------------|-----------|
-| admiration     |       0.635 |    0.565 |      0.598 |       504 |
-| amusement      |       0.713 |    0.894 |      0.793 |       264 |
-| anger          |       0.367 |    0.525 |      0.432 |       198 |
-| annoyance      |       0.215 |    0.406 |      0.281 |       320 |
-| approval       |       0.226 |    0.396 |      0.288 |       351 |
-| caring         |       0.199 |    0.304 |      0.24  |       135 |
-| confusion      |       0.268 |    0.412 |      0.325 |       153 |
-| curiosity      |       0.423 |    0.704 |      0.528 |       284 |
-| desire         |       0.585 |    0.373 |      0.456 |        83 |
-| disappointment |       0.176 |    0.146 |      0.159 |       151 |
-| disapproval    |       0.222 |    0.506 |      0.309 |       267 |
-| disgust        |       0.56  |    0.382 |      0.454 |       123 |
-| embarrassment  |       0.423 |    0.297 |      0.349 |        37 |
-| excitement     |       0.423 |    0.398 |      0.41  |       103 |
-| fear           |       0.538 |    0.641 |      0.585 |        78 |
-| gratitude      |       0.943 |    0.886 |      0.914 |       352 |
-| grief          |       0.111 |    0.333 |      0.167 |         6 |
-| joy            |       0.503 |    0.602 |      0.548 |       161 |
-| love           |       0.75  |    0.832 |      0.789 |       238 |
-| nervousness    |       0.429 |    0.13  |      0.2   |        23 |
-| optimism       |       0.681 |    0.505 |      0.58  |       186 |
-| pride          |       0.75  |    0.375 |      0.5   |        16 |
-| realization    |       0.4   |    0.097 |      0.156 |       145 |
-| relief         |       0.2   |    0.182 |      0.19  |        11 |
-| remorse        |       0.527 |    0.857 |      0.653 |        56 |
-| sadness        |       0.624 |    0.372 |      0.466 |       156 |
-| surprise       |       0.534 |    0.447 |      0.486 |       141 |
-| neutral        |       0.567 |    0.804 |      0.665 |      1787 |
+| admiration     |       0.613 |    0.607 |      0.610 |       504 |
+| amusement      |       0.724 |    0.886 |      0.797 |       264 |
+| anger          |       0.384 |    0.535 |      0.447 |       198 |
+| annoyance      |       0.230 |    0.431 |      0.300 |       320 |
+| approval       |       0.229 |    0.436 |      0.300 |       351 |
+| caring         |       0.262 |    0.281 |      0.271 |       135 |
+| confusion      |       0.395 |    0.320 |      0.354 |       153 |
+| curiosity      |       0.441 |    0.736 |      0.551 |       284 |
+| desire         |       0.538 |    0.422 |      0.473 |        83 |
+| disappointment |       0.221 |    0.152 |      0.180 |       151 |
+| disapproval    |       0.242 |    0.536 |      0.333 |       267 |
+| disgust        |       0.595 |    0.407 |      0.483 |       123 |
+| embarrassment  |       0.556 |    0.405 |      0.469 |        37 |
+| excitement     |       0.375 |    0.379 |      0.377 |       103 |
+| fear           |       0.575 |    0.538 |      0.556 |        78 |
+| gratitude      |       0.948 |    0.886 |      0.916 |       352 |
+| grief          |       0.200 |    0.167 |      0.182 |         6 |
+| joy            |       0.566 |    0.559 |      0.562 |       161 |
+| love           |       0.762 |    0.861 |      0.809 |       238 |
+| nervousness    |       0.333 |    0.174 |      0.229 |        23 |
+| optimism       |       0.632 |    0.516 |      0.568 |       186 |
+| pride          |       0.750 |    0.375 |      0.500 |        16 |
+| realization    |       0.250 |    0.159 |      0.194 |       145 |
+| relief         |       0.286 |    0.182 |      0.222 |        11 |
+| remorse        |       0.547 |    0.839 |      0.662 |        56 |
+| sadness        |       0.432 |    0.513 |      0.469 |       156 |
+| surprise       |       0.483 |    0.504 |      0.493 |       141 |
+| neutral        |       0.555 |    0.811 |      0.659 |      1787 |
 
 
-**Using default threshold of 0.5 for binarizing predictions**
-|                |   precision |   recall |   f1-score |   support |
-|:---------------|------------:|---------:|-----------:|----------:|
-| micro avg      |       0.494 |    0.596 |      0.54  |      6329 |
-| macro avg      |       0.408 |    0.495 |      0.44  |      6329 |
-| weighted avg   |       0.492 |    0.596 |      0.535 |      6329 |
-| samples avg    |       0.525 |    0.616 |      0.544 |      6329 |
-|----------------|-------------|----------|------------|-----------|
-| admiration     |       0.541 |    0.673 |      0.599 |       504 |
-| amusement      |       0.688 |    0.909 |      0.783 |       264 |
-| anger          |       0.419 |    0.47  |      0.443 |       198 |
-| annoyance      |       0.31  |    0.25  |      0.277 |       320 |
-| approval       |       0.304 |    0.271 |      0.287 |       351 |
-| caring         |       0.229 |    0.281 |      0.252 |       135 |
-| confusion      |       0.26  |    0.497 |      0.342 |       153 |
-| curiosity      |       0.432 |    0.764 |      0.552 |       284 |
-| desire         |       0.453 |    0.518 |      0.483 |        83 |
-| disappointment |       0.176 |    0.152 |      0.163 |       151 |
-| disapproval    |       0.279 |    0.404 |      0.33  |       267 |
-| disgust        |       0.447 |    0.545 |      0.491 |       123 |
-| embarrassment  |       0.325 |    0.351 |      0.338 |        37 |
-| excitement     |       0.288 |    0.427 |      0.344 |       103 |
-| fear           |       0.47  |    0.692 |      0.56  |        78 |
-| gratitude      |       0.834 |    0.943 |      0.885 |       352 |
-| grief          |       0     |    0     |      0     |         6 |
-| joy            |       0.445 |    0.652 |      0.529 |       161 |
-| love           |       0.724 |    0.895 |      0.801 |       238 |
-| nervousness    |       0.24  |    0.261 |      0.25  |        23 |
-| optimism       |       0.483 |    0.543 |      0.511 |       186 |
-| pride          |       0.667 |    0.375 |      0.48  |        16 |
-| realization    |       0.226 |    0.166 |      0.191 |       145 |
-| relief         |       0.222 |    0.182 |      0.2   |        11 |
-| remorse        |       0.516 |    0.857 |      0.644 |        56 |
-| sadness        |       0.405 |    0.545 |      0.464 |       156 |
-| surprise       |       0.429 |    0.539 |      0.478 |       141 |
-| neutral        |       0.602 |    0.695 |      0.645 |      1787 |  
-
-
-
+### Entropy-based uncertainty quantification
 
 <br>**Model uncertainty quantification on GoEmotions test set**  
-The distribution demonstrates strong calibration, as the highest error density correlates with increased epistemic uncertainty. While most high-probability predictions are correct, a small fragment of overconfident incorrects remains likely due to dataset bias or linguistic nuances like sarcasm. These outliers identify a clear opportunity for further refinement using **temperature scaling**.
-![epistemic_unc](outputs/epistemic_unc_scatter.png)
+| Mean probability vs Epistemic | Mean probability vs Aleatoric |
+| :---: | :---: |
+| ![Epistemic Scatter](outputs/epistemic_unc_scatter.png) | ![Aleatoric Scatter](outputs/aleatoric_unc_scatter.png) |
 
 
-**Confusion matrix**
-![multi_label_confusion_matrix](outputs/confusion_matrix.png)
+<br>**Demonstration of model uncertainty utilization**  
+Compute F1 score while removing the most uncertain (epistemic) x % of positive and negative classified test samples
+![F1 Rejection curve](outputs/f1_rejection_epistemic.png)
 
+
+<br>**Emotion uncertainty distribution**  
+| Epistemic | Aleatoric |
+| :---: | :---: |
+| ![Epistemic Ridge](outputs/ridge_epistemic.png) | ![Aleatoric Ridge](outputs/ridge_aleatoric.png) |
 
 
 ## Workflow
