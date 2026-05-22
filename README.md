@@ -61,7 +61,6 @@ mean_probs = all_probs.mean(dim=0) # Mean Predicted Probability
 # base std estimation of Epistemic Uncertainty
 uncertainty = all_probs.std(dim=0)
 
-
 # Formatted Output
 m_probs = mean_probs.squeeze(0)
 u_vals = uncertainty.squeeze(0)
