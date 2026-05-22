@@ -47,13 +47,14 @@ inputs = tokenizer("I am so happy you are here!", return_tensors="pt")
 model.eval()
 with torch.no_grad():
     # Automatically keeps Dropout active, even when in model.eval
-    mc_logits = model.mc_forward(
+    outputs = model.mc_forward(
         **inputs,
         n_samples=N_SAMPLES,
         max_batch_size=MAX_BATCH_SIZE
     )
 
 # Bayesian Post-processing
+mc_logits = outputs.logits
 all_probs = torch.sigmoid(mc_logits) # (n_samples, B, 28)
 
 mean_probs = all_probs.mean(dim=0) # Mean Predicted Probability
