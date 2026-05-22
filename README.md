@@ -233,6 +233,7 @@ Admiration | Fear |
 | :---: | :---: |
 | ![Admiration Scatter](outputs/admiration_scatters.png) | ![Fear Scatter](outputs/fear_scatters.png) |
 
+**Neutral**
 ![Neutral Scatter](outputs/neutral_scatters.png) 
 
 
