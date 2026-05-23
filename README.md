@@ -227,6 +227,24 @@ To validate uncertainty quantification, reject the top $X\%$ most uncertain (epi
 - `fear`: minority representation
 - `neutral`: the most samples
 
+
+<table>
+  <tr>
+    <th style="width: 50%; text-align: center;">Admiration</th>
+    <th style="width: 50%; text-align: center;">Fear</th>
+  </tr>
+  <tr>
+    <td style="text-align: center;">
+      <img src="outputs/admiration_scatters.png" alt="Admiration Scatter" style="width: 100%;">
+    </td>
+    <td style="text-align: center;">
+      <img src="outputs/fear_scatters.png" alt="Fear Scatter" style="width: 100%;">
+    </td>
+  </tr>
+</table>
+
+
+
 | Admiration | Fear |
 | :---: | :---: |
 | ![Admiration Scatter](outputs/admiration_scatters.png) | ![Fear Scatter](outputs/fear_scatters.png) |
