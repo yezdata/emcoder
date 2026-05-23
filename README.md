@@ -80,85 +80,7 @@ for idx in sorted_indices:
 
 
 ## Model Architecture
-```mermaid
----
-config:
-  layout: fixed
-  theme: redux-dark
----
-flowchart LR
- subgraph InputGroup["Input Operations (mc_forward Loop)"]
-    direction TB
-        MCD_Loop(["Stochastic Inference"])
-        ids["x_stacked<br>(num_samples * B, S)"]
-        mask["mask_stacked<br>(num_samples * B, S)"]
-  end
- subgraph Layer["EmCoderEncoderLayer (x N)"]
-    direction TB
-        ln1["ln1 (RMSNorm)"]
-        RoPE["Q/K Rotation<br>(RotaryEmbedding)"]
-        SDPA["FlashAttention<br>"]
-        attn_drop[("MC-Dropout<br>attn_out")]
-        ln2["ln2 (RMSNorm)"]
-        SwiGLU["FeedForward<br>(SwiGLU)"]
-        ffn_drop[("MC-Dropout<br>ffn_out")]
-  end
- subgraph EmCoderCore["EmCoder Encoder Backbone"]
-    direction LR
-        tok_emb["Token Embedding"]
-        embed_norm["embed_norm<br>(RMSNorm)"]
-        Layer
-        final_norm["final_norm<br>(RMSNorm)"]
-  end
- subgraph ClassifierHead["Classifier Head"]
-    direction TB
-        pool["masked_mean_pooling"]
-        MLP_Lin1["Linear<br>(d_model -&gt; d_model)"]
-        MLP_Act["GELU"]
-        MLP_Drop[("MC-Dropout<br>classifier")]
-        MLP_Out["Linear <br>(d_model -&gt; num_labels)"]
-  end
-    ln1 --> RoPE
-    RoPE --> SDPA
-    SDPA --> attn_drop
-    attn_drop ==> ln2
-    ln2 --> SwiGLU
-    SwiGLU --> ffn_drop
-    MCD_Loop -.-> ids & mask
-    ids ==> tok_emb
-    tok_emb ==> embed_norm
-    embed_norm ==> ln1
-    mask -.-> SDPA & pool
-    ffn_drop ==> final_norm
-    final_norm ==> pool
-    pool ==> MLP_Lin1
-    MLP_Lin1 ==> MLP_Act
-    MLP_Act ==> MLP_Drop
-    MLP_Drop ==> MLP_Out
-    MLP_Out ==> Out(["all_logits<br>(n_samples, B, 28)"])
-    Out ==> Avg(["Bayesian Post-processing<br>(Mean Probs &amp; Epistemic Uncertainty)"])
-
-     MCD_Loop:::LoopNode
-     attn_drop:::MCD
-     ffn_drop:::MCD
-     MLP_Drop:::MCD
-     Out:::OutNode
-     Avg:::BayesNode
-    classDef MCD fill:#424242,stroke:#fbc02d,stroke-width:2px,stroke-dasharray: 5 5,color:#fff
-    classDef OutNode fill:#0d47a1,stroke:#1976d2,stroke-width:3px,color:#fff,font-weight:bold
-    classDef BayesNode fill:#3e2723,stroke:#ff7043,stroke-width:2px,color:#fff
-    classDef LoopNode fill:#263238,stroke:#78909c,stroke-width:2px,color:#fff,font-style:italic
-    style Layer fill:#1e1e1e,stroke:#475569,stroke-width:1px,color:#fff
-    style InputGroup fill:#0d1b2a,stroke:#1b263b,stroke-width:1px,color:#fff
-    style EmCoderCore fill:#121212,stroke:#334155,stroke-width:1px,color:#fff
-    style ClassifierHead fill:#1b2e1b,stroke:#2d4a2d,stroke-width:1px,color:#fff
-    linkStyle 2 stroke:#fbc02d,stroke-width:2px,fill:none
-    linkStyle 3 stroke:#fbc02d,stroke-width:2px,fill:none
-    linkStyle 5 stroke:#fbc02d,stroke-width:2px,fill:none
-    linkStyle 13 stroke:#fbc02d,stroke-width:2px,fill:none
-    linkStyle 17 stroke:#fbc02d,stroke-width:2px,fill:none
-    linkStyle 18 stroke:#fbc02d,stroke-width:2px,fill:none
-```
+![EmCoder Architecture](outputs/architecture.png)
 
 
 ### Optimization
@@ -246,68 +168,7 @@ To validate uncertainty quantification, reject the top $X\%$ most uncertain (epi
 ![Confusion Matrix](outputs/confusion_matrix.png)
 
 ## Workflow
-```mermaid
----
-config:
-  theme: redux-dark
-  layout: fixed
----
-flowchart LR
- subgraph PT["Phase 1: Pre-training"]
-    direction TB
-        MLM["Masked Language Modeling"]
-        DataMix[("Mixed Dataset<br>50% OWT, 30% C4, 20% Wiki")]
-        Core["Save EmCoderEncoder"]
-  end
- subgraph FT["Phase 2: Fine-tuning"]
-    direction TB
-        Init["Init ClassificationHead"]
-        FT_Node["Fine-tuning"]
-        GE[("GoEmotions")]
-        LogW["Log-weighted BCE Loss"]
-  end
- subgraph UNC["Uncertainty Estimation"]
-        EPI["Epistemic: Mutual Information"]
-        ALE["Aleatoric: Expected Entropy"]
-  end
- subgraph PERF["Performance"]
-        RC["F1-Rejection Curve"]
-  end
- subgraph EV["Phase 3: Testing & Inference"]
-    direction TB
-        MCD["Bayesian Inference<br>MC Dropout"]
-        UNC
-        PERF
-  end
-    DataMix --> MLM
-    MLM --> Core
-    Core --> Init
-    GE --> FT_Node
-    Init --> FT_Node
-    FT_Node --> LogW
-    LogW --> MCD
-    MCD --> UNC & PERF
-
-     MLM:::StageNode
-     DataMix:::StageNode
-     Core:::StageNode
-     Init:::StageNode
-     FT_Node:::HighlightNode
-     GE:::StageNode
-     LogW:::StageNode
-     EPI:::StageNode
-     ALE:::StageNode
-     RC:::StageNode
-     MCD:::HighlightNode
-    classDef StageNode fill:#121212,stroke:#546e7a,color:#fff
-    classDef HighlightNode fill:#4e342e,stroke:#ff7043,stroke-width:2px,color:#fff,font-weight:bold
-    style UNC fill:#051c05,stroke:#1b4d1b,color:#fff
-    style PERF fill:#001c3d,stroke:#1b4373,color:#fff
-    style PT fill:#0d1b2a,stroke:#1b263b,color:#fff
-    style FT fill:#2e1500,stroke:#5d2a00,color:#fff
-    style EV fill:#1b2e1b,stroke:#2d4a2d,color:#fff
-    linkStyle 7 stroke:#aaa,stroke-width:2px,fill:none
-```
+![EmCoder Workflow](outputs/workflow.png)
 
 
 ## Concrete Dropout Experiment 
