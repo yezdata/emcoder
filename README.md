@@ -223,11 +223,11 @@ To validate uncertainty quantification, reject the top $X\%$ most uncertain (epi
 
 
 <br>**Uncertainty quantification on GoEmotions test set for selected emotions**  
-- `admiration`: medium appereance
+- `admiration`: medium appearance
 - `fear`: minority representation
 - `neutral`: the most samples
 
-Admiration | Fear |
+| Admiration | Fear |
 | :---: | :---: |
 | ![Admiration Scatter](outputs/admiration_scatters.png) | ![Fear Scatter](outputs/fear_scatters.png) |
 
