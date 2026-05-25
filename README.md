@@ -25,7 +25,7 @@ EmCoder achieves highly competitive Macro F1-score with its compact size (~35% s
 Ensure you allow remote code execution since it's a custom architecture.
 ```python
 import torch
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 repo_id = "yezdata/EmCoder"
 
@@ -33,7 +33,7 @@ repo_id = "yezdata/EmCoder"
 tokenizer = AutoTokenizer.from_pretrained("answerdotai/ModernBERT-base")
 
 # Initialize with same config as training
-model = AutoModel.from_pretrained(repo_id, trust_remote_code=True)
+model = AutoModelForSequenceClassification.from_pretrained(repo_id, trust_remote_code=True)
 ```
 ### 2. Bayesian inference
 To obtain probabilistic outputs and uncertainty metrics, use the `mc_forward` method:
