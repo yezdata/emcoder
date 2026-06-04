@@ -4,8 +4,7 @@
 
 
 Unlike standard classifiers, EmCoder quantifies what it doesn't know using Monte Carlo Dropout, making it suitable for high-stakes AI pipelines.<br>
-EmCoder is optimized for **MC Dropout inference**.
-
+EmCoder is optimized for **MC Dropout inference** and its architecture has no limit on maximum input length thanks to **RoPE**.
 
 
 ## SOTA benchmark
