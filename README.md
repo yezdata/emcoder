@@ -1,6 +1,5 @@
 # EmCoder
-> **Probabilistic Emotion Recognition & Uncertainty Quantification**<br>**28 Emotion multi-label Transformer (encoder) classifier**<br>**Model Repository:** **https://huggingface.co/yezdata/EmCoder**<br>**Live Demo & API Service:** [Try EmCoder on Hugging Face Spaces](https://yezdata-emcoder-api-ui.hf.space)  
-> **Training repository: https://github.com/yezdata/emcoder_train**
+> **Probabilistic Emotion Recognition & Uncertainty Quantification**<br>**28 Emotion multi-label Transformer (encoder) classifier**<br>**HuggingFace Repository:** **https://huggingface.co/yezdata/EmCoder**<br>**Live Demo & API Service:** [Try EmCoder on Hugging Face Spaces](https://yezdata-emcoder-api-ui.hf.space)<br>**Training GitHub Repository: https://github.com/yezdata/emcoder_train**
 
 
 
