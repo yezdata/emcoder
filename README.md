@@ -2,7 +2,6 @@
 > **Probabilistic Emotion Recognition & Uncertainty Quantification**<br>**28 Emotion multi-label Transformer (encoder) classifier**<br>**HuggingFace Repository:** **https://huggingface.co/yezdata/EmCoder**<br>**Live Demo & API Service:** [Try EmCoder on Hugging Face Spaces](https://yezdata-emcoder-api-ui.hf.space)<br>**Training GitHub Repository: https://github.com/yezdata/emcoder_train**
 
 
-
 Unlike standard classifiers, EmCoder quantifies what it doesn't know using Monte Carlo Dropout, making it suitable for high-stakes AI pipelines.<br>
 EmCoder is optimized for **MC Dropout inference** and its architecture has no limit on maximum input length thanks to **RoPE**.
 
